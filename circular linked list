@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void insertEnd(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+    struct Node* temp = *head;
+
+    if (*head == NULL) {
+        *head = newNode;
+        newNode->next = *head;
+    } else {
+        while (temp->next != *head)
+            temp = temp->next;
+
+        temp->next = newNode;
+        newNode->next = *head;
+    }
+}
+
+void displayList(struct Node* head) {
+    if (head == NULL) {
+        printf("The list is empty.\n");
+        return;
+    }
+
+    struct Node* temp = head;
+    do {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    } while (temp != head);
+    printf("(Back to head)\n");
+}
+
+void deleteNode(struct Node** head, int key) {
+    if (*head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+
+    struct Node *temp = *head, *prev = NULL;
+
+    if (temp->data == key && temp->next == *head) {
+        free(temp);
+        *head = NULL;
+        return;
+    }
+
+    while (temp->data != key) {
+        if (temp->next == *head) {
+            printf("Key not found in the list.\n");
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == *head) {
+        prev = *head;
+        while (prev->next != *head)
+            prev = prev->next;
+        prev->next = temp->next;
+        *head = temp->next;
+        free(temp);
+    } else if (temp->next == *head) { 
+        prev->next = *head;
+        free(temp);
+    } else { 
+        prev->next = temp->next;
+        free(temp);
+    }
+}
+
+int main() {
+    struct Node* head = NULL;
+
+    insertEnd(&head, 10);
+    insertEnd(&head, 20);
+    insertEnd(&head, 30);
+    insertEnd(&head, 40);
+
+    printf("Circular Linked List:\n");
+    displayList(head);
+
+    printf("Deleting node with value 20.\n");
+    deleteNode(&head, 20);
+    displayList(head);
+
+    return 0;
+}
